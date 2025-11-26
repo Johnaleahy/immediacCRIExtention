@@ -1,4 +1,4 @@
-document.getElementById('findBtn').addEventListener('click', async () => {
+document.getElementById('searchBtn').addEventListener('click', async () => {
   const name = document.getElementById('nameInput').value.trim();
   if (!name) {
     document.getElementById('result').textContent = 'Please enter a name';
@@ -9,75 +9,66 @@ document.getElementById('findBtn').addEventListener('click', async () => {
 
   const results = await chrome.scripting.executeScript({
     target: { tabId: tab.id },
-    func: findAndHighlight,
+    func: findAndSubmitSearch,
     args: [name]
   });
 
-  const count = results[0].result;
-  document.getElementById('result').textContent =
-    count > 0 ? `Found ${count} match${count === 1 ? '' : 'es'}` : 'No matches found';
+  const result = results[0].result;
+  document.getElementById('result').textContent = result.message;
 });
 
-document.getElementById('clearBtn').addEventListener('click', async () => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+function findAndSubmitSearch(name) {
+  // Common search input selectors
+  const searchSelectors = [
+    'input[type="search"]',
+    'input[name="q"]',
+    'input[name="query"]',
+    'input[name="search"]',
+    'input[name="s"]',
+    'input[placeholder*="search" i]',
+    'input[placeholder*="find" i]',
+    'input[aria-label*="search" i]',
+    'input[id*="search" i]',
+    'input[class*="search" i]',
+    'header input[type="text"]',
+    'nav input[type="text"]',
+    '[role="search"] input'
+  ];
 
-  await chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    func: clearHighlights
-  });
+  let searchInput = null;
 
-  document.getElementById('result').textContent = 'Highlights cleared';
-});
-
-function findAndHighlight(name) {
-  // Clear existing highlights first (inline to work in page context)
-  const existingStyle = document.getElementById('name-finder-style');
-  if (existingStyle) existingStyle.remove();
-
-  const existingHighlights = document.querySelectorAll('.name-finder-highlight');
-  existingHighlights.forEach(mark => {
-    const parent = mark.parentNode;
-    parent.replaceChild(document.createTextNode(mark.textContent), mark);
-    parent.normalize();
-  });
-
-  const regex = new RegExp(`(${name})`, 'gi');
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
-  const textNodes = [];
-
-  while (walker.nextNode()) {
-    if (walker.currentNode.nodeValue.match(regex)) {
-      textNodes.push(walker.currentNode);
+  // Try each selector until we find a search box
+  for (const selector of searchSelectors) {
+    const input = document.querySelector(selector);
+    if (input && input.offsetParent !== null) { // Check it's visible
+      searchInput = input;
+      break;
     }
   }
 
-  let count = 0;
-  textNodes.forEach(node => {
-    const matches = node.nodeValue.match(regex);
-    if (matches) {
-      count += matches.length;
-      const span = document.createElement('span');
-      span.innerHTML = node.nodeValue.replace(regex, '<mark class="name-finder-highlight">$1</mark>');
-      node.parentNode.replaceChild(span, node);
-    }
-  });
+  if (!searchInput) {
+    return { success: false, message: 'No search box found on this page' };
+  }
 
-  const style = document.createElement('style');
-  style.id = 'name-finder-style';
-  style.textContent = '.name-finder-highlight { background-color: yellow; padding: 2px; }';
-  document.head.appendChild(style);
+  // Fill in the search box
+  searchInput.value = name;
+  searchInput.dispatchEvent(new Event('input', { bubbles: true }));
 
-  return count;
-}
+  // Try to submit the search
+  const form = searchInput.closest('form');
+  if (form) {
+    form.submit();
+    return { success: true, message: 'Searching...' };
+  }
 
-function clearHighlights() {
-  const existingStyle = document.getElementById('name-finder-style');
-  if (existingStyle) existingStyle.remove();
+  // If no form, try pressing Enter
+  searchInput.dispatchEvent(new KeyboardEvent('keydown', {
+    key: 'Enter',
+    code: 'Enter',
+    keyCode: 13,
+    which: 13,
+    bubbles: true
+  }));
 
-  const highlights = document.querySelectorAll('.name-finder-highlight');
-  highlights.forEach(mark => {
-    const parent = mark.parentNode;
-    parent.replaceChild(document.createTextNode(mark.textContent), mark);
-    parent.normalize();
-  });
+  return { success: true, message: 'Search submitted' };
 }

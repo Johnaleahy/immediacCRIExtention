@@ -31,22 +31,13 @@ button {
   font-size: 14px;
 }
 
-#findBtn {
+#searchBtn {
   background-color: #4285f4;
   color: white;
 }
 
-#findBtn:hover {
+#searchBtn:hover {
   background-color: #3367d6;
-}
-
-#clearBtn {
-  background-color: #f1f1f1;
-  color: #333;
-}
-
-#clearBtn:hover {
-  background-color: #e0e0e0;
 }
 
 #result {
