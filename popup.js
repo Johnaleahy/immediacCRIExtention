@@ -5,28 +5,36 @@ document.getElementById('searchBtn').addEventListener('click', async () => {
     return;
   }
 
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-  const results = await chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    func: findAndSubmitSearch,
-    args: [name]
-  });
+    const results = await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: findAndSubmitSearch,
+      args: [name]
+    });
 
-  const result = results[0].result;
-  document.getElementById('result').textContent = result.message;
+    const result = results[0].result;
+    document.getElementById('result').textContent = result.message;
+  } catch (err) {
+    document.getElementById('result').textContent = 'Error: ' + err.message;
+  }
 });
 
 document.getElementById('messageBtn').addEventListener('click', async () => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-  const results = await chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    func: clickMessageButton
-  });
+    const results = await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: clickMessageButton
+    });
 
-  const result = results[0].result;
-  document.getElementById('result').textContent = result.message;
+    const result = results[0].result;
+    document.getElementById('result').textContent = result.message;
+  } catch (err) {
+    document.getElementById('result').textContent = 'Error: ' + err.message;
+  }
 });
 
 function findAndSubmitSearch(name) {
@@ -86,12 +94,18 @@ function findAndSubmitSearch(name) {
 }
 
 function clickMessageButton() {
-  // Find span elements containing "Message" text
-  const spans = document.querySelectorAll('span');
+  // First try the specific LinkedIn artdeco button
+  const artdecoSpan = document.querySelector('span.artdeco-button__text');
+  if (artdecoSpan && artdecoSpan.textContent.trim() === 'Message') {
+    const clickable = artdecoSpan.closest('button, a, [role="button"]') || artdecoSpan;
+    clickable.click();
+    return { success: true, message: 'Clicked Message button' };
+  }
 
+  // Fallback: find any span containing "Message" text
+  const spans = document.querySelectorAll('span');
   for (const span of spans) {
     if (span.textContent.trim() === 'Message') {
-      // Click the span or its parent button/link
       const clickable = span.closest('button, a, [role="button"]') || span;
       clickable.click();
       return { success: true, message: 'Clicked Message button' };
