@@ -30,7 +30,16 @@ document.getElementById('clearBtn').addEventListener('click', async () => {
 });
 
 function findAndHighlight(name) {
-  clearHighlights();
+  // Clear existing highlights first (inline to work in page context)
+  const existingStyle = document.getElementById('name-finder-style');
+  if (existingStyle) existingStyle.remove();
+
+  const existingHighlights = document.querySelectorAll('.name-finder-highlight');
+  existingHighlights.forEach(mark => {
+    const parent = mark.parentNode;
+    parent.replaceChild(document.createTextNode(mark.textContent), mark);
+    parent.normalize();
+  });
 
   const regex = new RegExp(`(${name})`, 'gi');
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
