@@ -97,8 +97,9 @@ function findAndSubmitSearch(name) {
 }
 
 async function clickMessageAndFill(messageText) {
-  // Search ALL artdeco button spans for "Message"
   let clicked = false;
+
+  // Method 1: Search artdeco button spans for "Message"
   const artdecoSpans = document.querySelectorAll('span.artdeco-button__text');
   for (const span of artdecoSpans) {
     if (span.textContent.trim() === 'Message') {
@@ -109,7 +110,7 @@ async function clickMessageAndFill(messageText) {
     }
   }
 
-  // Fallback: find any span containing "Message" text
+  // Method 2: Search ALL spans for "Message"
   if (!clicked) {
     const spans = document.querySelectorAll('span');
     for (const span of spans) {
@@ -122,9 +123,39 @@ async function clickMessageAndFill(messageText) {
     }
   }
 
+  // Method 3: Search buttons with aria-label containing "message"
   if (!clicked) {
-    const found = Array.from(artdecoSpans).map(s => s.textContent.trim()).join(', ');
-    return { success: false, message: 'No Message button found. Found: ' + (found || 'none') };
+    const buttons = document.querySelectorAll('button[aria-label*="message" i], button[aria-label*="Message"]');
+    if (buttons.length > 0) {
+      buttons[0].click();
+      clicked = true;
+    }
+  }
+
+  // Method 4: Search for any element containing just "Message" text
+  if (!clicked) {
+    const allElements = document.querySelectorAll('button, a, [role="button"]');
+    for (const el of allElements) {
+      if (el.textContent.trim() === 'Message') {
+        el.click();
+        clicked = true;
+        break;
+      }
+    }
+  }
+
+  if (!clicked) {
+    // Debug: find all spans and buttons to see what's on the page
+    const allSpans = document.querySelectorAll('span');
+    const messageSpans = Array.from(allSpans)
+      .filter(s => s.textContent.toLowerCase().includes('message'))
+      .map(s => s.textContent.trim().substring(0, 30))
+      .slice(0, 5);
+
+    return {
+      success: false,
+      message: 'No Message button found. Spans with "message": ' + (messageSpans.join(', ') || 'none')
+    };
   }
 
   // If no message text provided, just return after clicking
