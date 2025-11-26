@@ -94,12 +94,14 @@ function findAndSubmitSearch(name) {
 }
 
 function clickMessageButton() {
-  // First try the specific LinkedIn artdeco button
-  const artdecoSpan = document.querySelector('span.artdeco-button__text');
-  if (artdecoSpan && artdecoSpan.textContent.trim() === 'Message') {
-    const clickable = artdecoSpan.closest('button, a, [role="button"]') || artdecoSpan;
-    clickable.click();
-    return { success: true, message: 'Clicked Message button' };
+  // Search ALL artdeco button spans for "Message"
+  const artdecoSpans = document.querySelectorAll('span.artdeco-button__text');
+  for (const span of artdecoSpans) {
+    if (span.textContent.trim() === 'Message') {
+      const clickable = span.closest('button, a, [role="button"]') || span;
+      clickable.click();
+      return { success: true, message: 'Clicked Message button' };
+    }
   }
 
   // Fallback: find any span containing "Message" text
@@ -112,5 +114,7 @@ function clickMessageButton() {
     }
   }
 
-  return { success: false, message: 'No Message button found' };
+  // Debug: report what artdeco spans were found
+  const found = Array.from(artdecoSpans).map(s => s.textContent.trim()).join(', ');
+  return { success: false, message: 'No Message button found. Found: ' + (found || 'none') };
 }
