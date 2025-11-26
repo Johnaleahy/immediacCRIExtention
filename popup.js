@@ -22,12 +22,15 @@ document.getElementById('searchBtn').addEventListener('click', async () => {
 });
 
 document.getElementById('messageBtn').addEventListener('click', async () => {
+  const messageText = document.getElementById('messageText').value.trim();
+
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
     const results = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
-      func: clickMessageButton
+      func: clickMessageAndFill,
+      args: [messageText]
     });
 
     const result = results[0].result;
@@ -93,28 +96,76 @@ function findAndSubmitSearch(name) {
   return { success: true, message: 'Search submitted' };
 }
 
-function clickMessageButton() {
+async function clickMessageAndFill(messageText) {
   // Search ALL artdeco button spans for "Message"
+  let clicked = false;
   const artdecoSpans = document.querySelectorAll('span.artdeco-button__text');
   for (const span of artdecoSpans) {
     if (span.textContent.trim() === 'Message') {
       const clickable = span.closest('button, a, [role="button"]') || span;
       clickable.click();
-      return { success: true, message: 'Clicked Message button' };
+      clicked = true;
+      break;
     }
   }
 
   // Fallback: find any span containing "Message" text
-  const spans = document.querySelectorAll('span');
-  for (const span of spans) {
-    if (span.textContent.trim() === 'Message') {
-      const clickable = span.closest('button, a, [role="button"]') || span;
-      clickable.click();
-      return { success: true, message: 'Clicked Message button' };
+  if (!clicked) {
+    const spans = document.querySelectorAll('span');
+    for (const span of spans) {
+      if (span.textContent.trim() === 'Message') {
+        const clickable = span.closest('button, a, [role="button"]') || span;
+        clickable.click();
+        clicked = true;
+        break;
+      }
     }
   }
 
-  // Debug: report what artdeco spans were found
-  const found = Array.from(artdecoSpans).map(s => s.textContent.trim()).join(', ');
-  return { success: false, message: 'No Message button found. Found: ' + (found || 'none') };
+  if (!clicked) {
+    const found = Array.from(artdecoSpans).map(s => s.textContent.trim()).join(', ');
+    return { success: false, message: 'No Message button found. Found: ' + (found || 'none') };
+  }
+
+  // If no message text provided, just return after clicking
+  if (!messageText) {
+    return { success: true, message: 'Clicked Message button' };
+  }
+
+  // Wait for the message dialog to open and fill in the message
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
+  // Try common message input selectors
+  const messageSelectors = [
+    'div[contenteditable="true"]',
+    'textarea[name*="message"]',
+    'textarea[placeholder*="message" i]',
+    '.msg-form__contenteditable',
+    '[role="textbox"]'
+  ];
+
+  let messageInput = null;
+  for (const selector of messageSelectors) {
+    const input = document.querySelector(selector);
+    if (input) {
+      messageInput = input;
+      break;
+    }
+  }
+
+  if (!messageInput) {
+    return { success: true, message: 'Clicked Message but could not find message input' };
+  }
+
+  // Fill in the message
+  if (messageInput.tagName === 'TEXTAREA' || messageInput.tagName === 'INPUT') {
+    messageInput.value = messageText;
+    messageInput.dispatchEvent(new Event('input', { bubbles: true }));
+  } else {
+    // For contenteditable divs
+    messageInput.innerHTML = messageText;
+    messageInput.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  return { success: true, message: 'Message filled in!' };
 }

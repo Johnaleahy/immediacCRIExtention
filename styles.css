@@ -16,11 +16,18 @@ h1 {
   color: #333;
 }
 
-input[type="text"] {
+input[type="text"],
+textarea {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 14px;
+  font-family: Arial, sans-serif;
+}
+
+textarea {
+  min-height: 60px;
+  resize: vertical;
 }
 
 button {
