@@ -1,0 +1,56 @@
+body {
+  width: 250px;
+  padding: 15px;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+h1 {
+  font-size: 18px;
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+input[type="text"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#findBtn {
+  background-color: #4285f4;
+  color: white;
+}
+
+#findBtn:hover {
+  background-color: #3367d6;
+}
+
+#clearBtn {
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+#clearBtn:hover {
+  background-color: #e0e0e0;
+}
+
+#result {
+  font-size: 13px;
+  color: #666;
+  min-height: 20px;
+}
