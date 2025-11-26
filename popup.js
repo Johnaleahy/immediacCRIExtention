@@ -162,8 +162,10 @@ async function clickMessageAndFill(messageText) {
     messageInput.value = messageText;
     messageInput.dispatchEvent(new Event('input', { bubbles: true }));
   } else {
-    // For contenteditable divs
-    messageInput.innerHTML = messageText;
+    // For contenteditable divs (like LinkedIn)
+    // Clear the placeholder content and insert message in a paragraph
+    messageInput.focus();
+    messageInput.innerHTML = '<p>' + messageText + '</p>';
     messageInput.dispatchEvent(new Event('input', { bubbles: true }));
   }
 
