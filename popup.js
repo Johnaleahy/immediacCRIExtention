@@ -17,6 +17,18 @@ document.getElementById('searchBtn').addEventListener('click', async () => {
   document.getElementById('result').textContent = result.message;
 });
 
+document.getElementById('messageBtn').addEventListener('click', async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+  const results = await chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    func: clickMessageButton
+  });
+
+  const result = results[0].result;
+  document.getElementById('result').textContent = result.message;
+});
+
 function findAndSubmitSearch(name) {
   // Common search input selectors
   const searchSelectors = [
@@ -71,4 +83,20 @@ function findAndSubmitSearch(name) {
   }));
 
   return { success: true, message: 'Search submitted' };
+}
+
+function clickMessageButton() {
+  // Find span elements containing "Message" text
+  const spans = document.querySelectorAll('span');
+
+  for (const span of spans) {
+    if (span.textContent.trim() === 'Message') {
+      // Click the span or its parent button/link
+      const clickable = span.closest('button, a, [role="button"]') || span;
+      clickable.click();
+      return { success: true, message: 'Clicked Message button' };
+    }
+  }
+
+  return { success: false, message: 'No Message button found' };
 }

@@ -40,6 +40,15 @@ button {
   background-color: #3367d6;
 }
 
+#messageBtn {
+  background-color: #34a853;
+  color: white;
+}
+
+#messageBtn:hover {
+  background-color: #2d8e47;
+}
+
 #result {
   font-size: 13px;
   color: #666;
