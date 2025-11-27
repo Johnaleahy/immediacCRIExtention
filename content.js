@@ -11,8 +11,8 @@
   panel.id = 'name-finder-panel';
   panel.innerHTML = `
     <div class="nf-header">
-      <img src="${iconUrl}" alt="Name Finder" class="nf-icon">
-      <h2>Name Finder</h2>
+      <img src="${iconUrl}" alt="immediaCRI" class="nf-icon">
+      <h2>immediaCRI</h2>
       <button id="nf-toggle" class="nf-toggle-btn">−</button>
     </div>
     <div class="nf-content">
