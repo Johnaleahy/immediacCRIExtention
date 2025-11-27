@@ -1,0 +1,93 @@
+#name-finder-panel {
+  position: fixed;
+  top: 100px;
+  left: 10px;
+  width: 250px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+#name-finder-panel .nf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: #4285f4;
+  color: white;
+}
+
+#name-finder-panel .nf-header h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+#name-finder-panel .nf-toggle-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 5px;
+  line-height: 1;
+}
+
+#name-finder-panel .nf-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+}
+
+#name-finder-panel input[type="text"],
+#name-finder-panel textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#name-finder-panel textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+#name-finder-panel button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  width: 100%;
+}
+
+#name-finder-panel #nf-searchBtn {
+  background-color: #4285f4;
+  color: white;
+}
+
+#name-finder-panel #nf-searchBtn:hover {
+  background-color: #3367d6;
+}
+
+#name-finder-panel #nf-messageBtn {
+  background-color: #34a853;
+  color: white;
+}
+
+#name-finder-panel #nf-messageBtn:hover {
+  background-color: #2d8e47;
+}
+
+#name-finder-panel #nf-result {
+  font-size: 13px;
+  color: #666;
+  min-height: 20px;
+}
