@@ -3,11 +3,15 @@
   // Avoid injecting multiple times
   if (document.getElementById('name-finder-panel')) return;
 
+  // Get the icon URL
+  const iconUrl = chrome.runtime.getURL('icons/icon48.png');
+
   // Create the panel container
   const panel = document.createElement('div');
   panel.id = 'name-finder-panel';
   panel.innerHTML = `
     <div class="nf-header">
+      <img src="${iconUrl}" alt="Name Finder" class="nf-icon">
       <h2>Name Finder</h2>
       <button id="nf-toggle" class="nf-toggle-btn">−</button>
     </div>

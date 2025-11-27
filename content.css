@@ -13,16 +13,23 @@
 
 #name-finder-panel .nf-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: 12px 15px;
   background: #4285f4;
   color: white;
+  gap: 10px;
+}
+
+#name-finder-panel .nf-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
 }
 
 #name-finder-panel .nf-header h2 {
   margin: 0;
   font-size: 16px;
+  flex-grow: 1;
   font-weight: 600;
 }
 
